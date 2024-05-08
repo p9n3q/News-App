@@ -4,12 +4,12 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.newsapp.BuildConfig
 import com.example.newsapp.MainActivity
 import com.example.newsapp.NewsModel
 import com.example.newsapp.retrofit.NewsApi
-import com.example.newsapp.retrofit.NewsDataFromJson
+import com.example.newsapp.retrofit.NewsArticle
 import com.example.newsapp.retrofit.RetrofitHelper
+import com.example.newsapp.retrofit.TrendingNewsResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
@@ -54,40 +54,27 @@ class NewsRepository {
     }
 
     // get news from API
-    fun getNewsApiCall(category: String?): MutableLiveData<List<NewsModel>> {
+    fun getNewsApiCall(pageNumber: Int, recordCount: Int): MutableLiveData<List<NewsArticle>> {
 
-        val newsList = MutableLiveData<List<NewsModel>>()
+        val newsList = MutableLiveData<List<NewsArticle>>()
 
         val call = RetrofitHelper.getInstance().create(NewsApi::class.java)
-            .getNews("in", category, BuildConfig.API_KEY) //put your api key here
+            .getNews(pageNumber, recordCount)
 
-        call.enqueue(object : Callback<NewsDataFromJson> {
+        call.enqueue(object : Callback<TrendingNewsResponse> {
             override fun onResponse(
-                call: Call<NewsDataFromJson>,
-                response: Response<NewsDataFromJson>
+                call: Call<TrendingNewsResponse>,
+                response: Response<TrendingNewsResponse>
             ) {
 
                 if (response.isSuccessful) {
 
                     val body = response.body()
+                    Log.d("API_RESPONSE", "Success: ${body}")
 
                     if (body != null) {
-                        val tempNewsList = mutableListOf<NewsModel>()
-
-                        body.articles.forEach {
-                            tempNewsList.add(
-                                NewsModel(
-                                    it.title,
-                                    it.urlToImage,
-                                    it.description,
-                                    it.url,
-                                    it.source.name,
-                                    it.publishedAt,
-                                    it.content
-                                )
-                            )
-                        }
-                        newsList.value = tempNewsList
+                        newsList.value = body.results
+                        Log.d("API_RESPONSE", "Success: ${newsList.value}")
                     }
 
                 } else {
@@ -99,8 +86,9 @@ class NewsRepository {
                         if (jsonObj != null) {
                             MainActivity.apiRequestError = true
                             MainActivity.errorMessage = jsonObj.getString("message")
-                            val tempNewsList = mutableListOf<NewsModel>()
+                            val tempNewsList = mutableListOf<NewsArticle>()
                             newsList.value = tempNewsList
+                            Log.d("API_RESPONSE", "Error: ${jsonObj.getString("message")}")
                         }
                     } catch (e: JSONException) {
                         Log.d("JSONException", "" + e.message)
@@ -109,7 +97,7 @@ class NewsRepository {
                 }
             }
 
-            override fun onFailure(call: Call<NewsDataFromJson>, t: Throwable) {
+            override fun onFailure(call: Call<TrendingNewsResponse>, t: Throwable) {
 
                 MainActivity.apiRequestError = true
                 MainActivity.errorMessage = t.localizedMessage as String
@@ -119,6 +107,5 @@ class NewsRepository {
 
         return newsList
     }
-
 }
 

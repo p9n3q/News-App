@@ -8,6 +8,9 @@ import androidx.room.PrimaryKey
 data class NewsModel(
 
     @PrimaryKey(autoGenerate = false)
+    @ColumnInfo(name = "uuid")
+    val uuid: String,
+
     @ColumnInfo(name = "headline")
     val headLine: String,
 

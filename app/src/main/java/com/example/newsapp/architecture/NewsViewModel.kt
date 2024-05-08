@@ -2,6 +2,7 @@ package com.example.newsapp.architecture
 
 import android.content.Context
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.newsapp.NewsModel
@@ -11,11 +12,18 @@ class NewsViewModel : ViewModel() {
     private var newsLiveData: MutableLiveData<List<NewsModel>>? = null
 
     //get news from API
-    fun getNews(category: String?): MutableLiveData<List<NewsModel>>? {
+    fun getNews(): MutableLiveData<List<NewsModel>>? {
+        val newsLiveData = NewsRepository().getNewsApiCall(1, 20)
 
-        newsLiveData = category.let { NewsRepository().getNewsApiCall(it) }
+        val mappedNewsLiveData = MediatorLiveData<List<NewsModel>>().apply {
+            addSource(newsLiveData) { newsArticles ->
+                value = newsArticles?.map { newsArticle ->
+                    newsArticle.toNewsModel()
+                }
+            }
+        }
 
-        return newsLiveData
+        return mappedNewsLiveData
     }
 
     var newsData: LiveData<List<NewsModel>>? = null

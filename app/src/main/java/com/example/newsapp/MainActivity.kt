@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun requestNews(newsCategory: String, newsData: MutableList<NewsModel>) {
-        viewModel.getNews(category = newsCategory)?.observe(this) {
+        viewModel.getNews()?.observe(this) {
             newsData.addAll(it)
             totalRequestCount += 1
 
