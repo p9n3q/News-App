@@ -12,6 +12,7 @@
 
     <application
         android:allowBackup="true"
+        android:name=".MyApp"
         android:icon="@mipmap/ic_launcher"
         android:label="Flinfo"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -23,6 +24,9 @@
         <activity
             android:name=".ReadFlinfoNewsActivity"
             android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

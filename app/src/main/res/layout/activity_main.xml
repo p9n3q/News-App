@@ -38,7 +38,6 @@
             app:tabMode="scrollable"
             app:tabSelectedTextColor="@color/deep_sky_blue" />
 
-
     </com.google.android.material.appbar.AppBarLayout>
 
     <TextView

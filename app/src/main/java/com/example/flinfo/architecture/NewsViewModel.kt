@@ -22,7 +22,6 @@ class NewsViewModel : ViewModel() {
                 }
             }
         }
-
         return mappedNewsLiveData
     }
 

@@ -1,10 +1,13 @@
 package com.example.flinfo.architecture
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.flinfo.LoginActivity
 import com.example.flinfo.MainActivity
+import com.example.flinfo.MyApp
 import com.example.flinfo.NewsModel
 import com.example.flinfo.retrofit.ArticleResponse
 import com.example.flinfo.retrofit.NewsApi
@@ -54,13 +57,12 @@ class NewsRepository {
 
     }
 
-    // get news from API
     fun getNewsApiCall(pageNumber: Int, recordCount: Int): MutableLiveData<List<NewsArticle>> {
 
         val newsList = MutableLiveData<List<NewsArticle>>()
 
-        val call = RetrofitHelper.getInstance().create(NewsApi::class.java)
-            .getNews(pageNumber, recordCount)
+        val apiService = RetrofitHelper.getNewsApiService()
+        val call = apiService.getNews(pageNumber, recordCount)
 
         call.enqueue(object : Callback<TrendingNewsResponse> {
             override fun onResponse(
@@ -85,8 +87,7 @@ class NewsRepository {
                     try {
                         jsonObj = response.errorBody()?.string()?.let { JSONObject(it) }
                         if (jsonObj != null) {
-                            MainActivity.apiRequestError = true
-                            MainActivity.errorMessage = jsonObj.getString("message")
+                            handleAuthorizationError(response, jsonObj.getString("message"))
                             val tempNewsList = mutableListOf<NewsArticle>()
                             newsList.value = tempNewsList
                             Log.d("API_RESPONSE", "Error: ${jsonObj.getString("message")}")
@@ -99,9 +100,7 @@ class NewsRepository {
             }
 
             override fun onFailure(call: Call<TrendingNewsResponse>, t: Throwable) {
-
-                MainActivity.apiRequestError = true
-                MainActivity.errorMessage = t.localizedMessage as String
+                handleAuthorizationError(null, t.localizedMessage ?: "Unknown error")
                 Log.d("err_msg", "msg" + t.localizedMessage)
             }
         })
@@ -112,7 +111,7 @@ class NewsRepository {
     fun getArticleApiCall(uuid: String): LiveData<NewsModel> {
         val articleLiveData = MutableLiveData<NewsModel>()
 
-        val apiService = RetrofitHelper.getInstance().create(NewsApi::class.java)
+        val apiService = RetrofitHelper.getNewsApiService()
         val call = apiService.getArticle(uuid)
 
         call.enqueue(object : Callback<ArticleResponse> {
@@ -128,8 +127,7 @@ class NewsRepository {
                     try {
                         jsonObj = response.errorBody()?.string()?.let { JSONObject(it) }
                         if (jsonObj != null) {
-                            MainActivity.apiRequestError = true
-                            MainActivity.errorMessage = jsonObj.getString("message")
+                            handleAuthorizationError(response, jsonObj.getString("message"))
                         }
                     } catch (e: JSONException) {
                         Log.d("JSONException", "" + e.message)
@@ -138,13 +136,23 @@ class NewsRepository {
             }
 
             override fun onFailure(call: Call<ArticleResponse>, t: Throwable) {
-                MainActivity.apiRequestError = true
-                MainActivity.errorMessage = t.localizedMessage as String
+                handleAuthorizationError(null,t.localizedMessage ?: "Unknown error")
+                Log.d("err_msg", "msg" + t.localizedMessage)
             }
         })
 
         return articleLiveData
     }
-
+    private fun handleAuthorizationError(response: Response<*>?, errorMessage: String) {
+        if (response != null && (response.code() == 401 || response.code() == 403) || errorMessage == "Unauthorized" || errorMessage == "Authorization failed" || errorMessage == "Invalid Token") {
+            // Redirect to login activity
+            val intent = Intent(MyApp.instance, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            MyApp.instance.startActivity(intent)
+        } else {
+            MainActivity.apiRequestError = true
+            MainActivity.errorMessage = errorMessage
+        }
+    }
 }
 

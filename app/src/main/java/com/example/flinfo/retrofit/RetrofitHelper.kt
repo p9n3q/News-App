@@ -9,10 +9,20 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitHelper {
 
-    private const val BASE_URL = "https://api.flinfo.com/"
-    private const val AUTHORIZATION_TOKEN = "QdwUV+8E6feZTqULb1Pf9sLHKLCnp8M43Puyq/q0s+6a/K7a/CWJTRAhfHKaidBYz91RiRdC1v5KB9q4ht1Wy2AL6kwp2occw7T+aSiMv6Ta0elAkA0TlW6P+Lpe04135UgY+Gvq4rMF/rOpuFeB9+XHPAgAxpo15jaMuszLCS0IsPQg38PD17pCXHnbvYTMKlgpgmC9pZbU2Hl5mxDwNAe5p9DXZHTwcRRUVhqknZ/Sn70XuOAvk7b5UebFKjedMNdcOwVwA7nVT8C7hQrhTe/X0scWt2O0TnNOnFL3qdI5vjzjbSQ82mg8iZnG2//N5pAkPMeBENL7KBuDzXhJV0OdlOKRe1elT5bDytxr2wiebJMpZlomtiM+8Jx2eZz0orbLsLmCiDMzmV+usc2yVfkjXrB5HOuA6GP/ZDb4AuZ+Br3EzGEV1iQjyhYE9EmItBC4BlPwQFb5FIIQax4ro8T2MLU13QrdNj16TgihNtPevVP/3IdR0FcJasW3ddXqS5fWgAKZXoBf2J4TTF7RJY626XX9brh6uybrSiKQry3O/BBd1kTpHsV4lGmwzg0v+9tc84ZrDA0I/hFAIih8XFe1wAoeZWYJDCUXGYw+z5v/CTlw4rJ0bCge4RNa2VySl5TekkT/PLBaZManyh49/RIecBd5mfFUt4VE/3Z12SY="
+    private const val API_BASE_URL = "https://api.flinfo.com/"
+    private var authorizationToken: String? = null
+    private const val USERS_BASE_URL = "https://users.flinfo.com/"
 
-    fun getInstance(): Retrofit {
+    fun getUserApiService(): UserApi {
+        return getInstance(USERS_BASE_URL).create(UserApi::class.java)
+    }
+
+    fun getNewsApiService(): NewsApi {
+        return getInstance(API_BASE_URL).create(NewsApi::class.java)
+    }
+
+    fun getInstance(baseUrl: String): Retrofit {
+        //authorizationToken = "BqlfnnHB7bVJZl2Vw4owClSdjRAtX7V8O60TAorcDlczCpTIdjgTiIkjHvmtF5gpI8bJrXz3b5epcJvu1OBzNEysLmGd68wv/G7t8Rltv1G49rqwL264V1qvN6XY4SmnLa3mu9qB8TfdT0R6aaAODpBoiyiOwGh+Ofz3MCJypV62j6nwXYejyfJ2EyEZ82/J9k+9dUauaQICoMyoO4mOaz3ywvnogzW8SZCGGuYH8V0oNVyP3WcRXztQv6Z9ltz4PYJOpjzvd17IDIUQNcSWBQC20Sul5rfufJRypjHejJePEiNbAedBJwzXKCG0LLvK8aZawWykoYfldee1K+i/MToIPWiDjxepgaUvs7cMIB2QMLpN5pumwPNRm5M/aD4mv++XSzFqxdl6Ey+L7LYGg/w0whZpzTr+f8Vdk7nqfXkJgD+XacOr87Qzogr2Zmo7Wf+A5eY5HeP3Uem1dXuLMkN4W1fJBtrqmm5m7Rml0LIYNUsUG/5aywIltazpvOR2SVou4vfU2+EiQNc8mO/KxbJCX1gIOcWZdLxJNaWUqN7b08OWuHtwJfFllyrdGxHH9oaMDR89ySyUxBu/hjfuA6lVslBRlek/FdT/aE9C66tDK0FPXkYc4iUaI8KD+Xwrz81ULwEmH+pn+PRzUjzHnsMLffAdFPk0M0LFDy/NzEE="
 
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
@@ -24,7 +34,9 @@ object RetrofitHelper {
                 override fun intercept(chain: Interceptor.Chain): Response {
                     val original = chain.request()
                     val requestBuilder = original.newBuilder()
-                        .header("Authorization", "Bearer $AUTHORIZATION_TOKEN")
+                    authorizationToken?.let {
+                        requestBuilder.header("Authorization", "Bearer $it")
+                    }
                     val request = requestBuilder.build()
                     return chain.proceed(request)
                 }
@@ -32,10 +44,21 @@ object RetrofitHelper {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(baseUrl)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
+    // Save the AuthorizationToken in SharedPreferences or any other persistence mechanism
+    fun setAuthorizationToken(token: String) {
+        authorizationToken = token
+        // Save the token in SharedPreferences or any other persistence mechanism
+    }
+
+    // Retrieve the AuthorizationToken from SharedPreferences or any other persistence mechanism
+    fun getAuthorizationToken(): String? {
+        // Retrieve the token from SharedPreferences or any other persistence mechanism
+        return authorizationToken
+    }
 }

@@ -2,6 +2,13 @@ package com.example.flinfo.retrofit
 
 import com.example.flinfo.NewsModel
 
+data class AuthenticationResponse(
+    val message: String,
+    val stage: String,
+    val flinfoToken: String,
+    val daysLeftToExpiry: Int
+)
+
 data class TrendingNewsResponse(
     val header: Header,
     val results: List<NewsArticle>
