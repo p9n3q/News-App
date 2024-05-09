@@ -23,7 +23,8 @@
             app:layout_scrollFlags="scroll|enterAlways"
             app:title="@string/app_name"
             app:titleCentered="true"
-            app:titleTextColor="?attr/colorOnPrimary" />
+            app:titleTextColor="?attr/colorOnPrimary"
+            app:logo="@drawable/flinfo_logo" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
