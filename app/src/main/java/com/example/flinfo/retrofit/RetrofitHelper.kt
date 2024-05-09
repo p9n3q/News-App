@@ -1,5 +1,7 @@
 package com.example.flinfo.retrofit
 
+import android.content.Context
+import android.content.SharedPreferences
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -9,9 +11,19 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitHelper {
 
-    private const val API_BASE_URL = "https://api.flinfo.com/"
-    private var authorizationToken: String? = null
     private const val USERS_BASE_URL = "https://users.flinfo.com/"
+    private const val API_BASE_URL = "https://api.flinfo.com/"
+
+    private const val PREF_NAME = "FlinfoPrefs"
+    private const val PREF_KEY_AUTH_TOKEN = "authorizationToken"
+
+    private lateinit var authorizationToken: String
+    private lateinit var sharedPreferences: SharedPreferences
+
+    fun init(context: Context) {
+        sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        authorizationToken = sharedPreferences.getString(PREF_KEY_AUTH_TOKEN, "") ?: ""
+    }
 
     fun getUserApiService(): UserApi {
         return getInstance(USERS_BASE_URL).create(UserApi::class.java)
@@ -53,7 +65,7 @@ object RetrofitHelper {
     // Save the AuthorizationToken in SharedPreferences or any other persistence mechanism
     fun setAuthorizationToken(token: String) {
         authorizationToken = token
-        // Save the token in SharedPreferences or any other persistence mechanism
+        sharedPreferences.edit().putString(PREF_KEY_AUTH_TOKEN, token).apply()
     }
 
     // Retrieve the AuthorizationToken from SharedPreferences or any other persistence mechanism

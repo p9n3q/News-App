@@ -22,4 +22,16 @@
     <color name="shimmer_bg_color">#dddddd</color>
 
 
+    <color name="colorPrimary">#FFC107</color>
+
+    <!-- Primary background color -->
+    <color name="primary_background">@color/dark_navy_blue</color>
+
+    <!-- Secondary text color -->
+    <color name="secondary_text">@color/grey_white</color>
+
+    <!-- Primary button color -->
+    <color name="primary_button">@color/royal_blue</color>
+
+
 </resources>

@@ -1,6 +1,7 @@
 package com.example.flinfo
 
 import android.app.Application
+import com.example.flinfo.retrofit.RetrofitHelper
 
 class MyApp : Application() {
 
@@ -11,6 +12,6 @@ class MyApp : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        RetrofitHelper.init(applicationContext)
     }
-
 }
