@@ -6,6 +6,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.flinfo.NewsModel
+import com.example.flinfo.retrofit.LearningModeResponse
 
 class NewsViewModel : ViewModel() {
 
@@ -42,5 +43,9 @@ class NewsViewModel : ViewModel() {
 
     fun getArticle(uuid: String): LiveData<NewsModel> {
         return NewsRepository().getArticleApiCall(uuid)
+    }
+
+    fun getArticleInLearningMode(uuid: String): LiveData<LearningModeResponse> {
+        return NewsRepository().getArticleInLearningModeApiCall(uuid)
     }
 }

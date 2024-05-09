@@ -11,8 +11,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitHelper {
 
-    private const val USERS_BASE_URL = "https://users.flinfo.com/"
-    private const val API_BASE_URL = "https://api.flinfo.com/"
+    private const val USERS_BASE_URL = "https://users.flinput.com/"
+    private const val API_BASE_URL = "https://api.flinput.com/"
 
     private const val PREF_NAME = "FlinfoPrefs"
     private const val PREF_KEY_AUTH_TOKEN = "authorizationToken"

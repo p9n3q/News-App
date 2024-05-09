@@ -12,4 +12,7 @@ interface NewsApi {
 
     @GET("doc/{uuid}")
     fun getArticle(@Path("uuid") uuid: String): Call<ArticleResponse>
+
+    @GET("fl-learn/{uuid}")
+    fun getArticleInLearningMode(@Path("uuid") uuid: String): Call<LearningModeResponse>
 }

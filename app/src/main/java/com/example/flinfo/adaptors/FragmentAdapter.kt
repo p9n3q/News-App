@@ -1,4 +1,4 @@
-package com.example.flinfo.adapters
+package com.example.flinfo.adaptors
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager

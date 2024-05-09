@@ -14,7 +14,7 @@ import com.example.flinfo.MainActivity
 import com.example.flinfo.NewsModel
 import com.example.flinfo.R
 import com.example.flinfo.ReadFlinfoNewsActivity
-import com.example.flinfo.adapters.CustomAdapter
+import com.example.flinfo.adaptors.CustomAdapter
 import com.example.flinfo.utils.Constants.NEWS_CONTENT
 import com.example.flinfo.utils.Constants.NEWS_DESCRIPTION
 import com.example.flinfo.utils.Constants.NEWS_IMAGE_URL

@@ -1,5 +1,7 @@
 package com.example.flinfo.retrofit
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.example.flinfo.NewsModel
 
 data class AuthenticationResponse(
@@ -118,3 +120,90 @@ data class ArticleResponse(
     }
 }
 
+data class LearningModeResponse(
+    val uuid: String,
+    val originalTitle: String,
+    val originalSourceArticleText: String,
+    val title: List<Title>? = null,
+    val createdAt: String,
+    val lastModifiedAt: String
+) : Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.createTypedArrayList(Title)!!,
+        parcel.readString()!!,
+        parcel.readString()!!
+    )
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(uuid)
+        parcel.writeString(originalTitle)
+        parcel.writeString(originalSourceArticleText)
+        parcel.writeTypedList(title)
+        parcel.writeString(createdAt)
+        parcel.writeString(lastModifiedAt)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<LearningModeResponse> {
+        override fun createFromParcel(parcel: Parcel): LearningModeResponse {
+            return LearningModeResponse(parcel)
+        }
+
+        override fun newArray(size: Int): Array<LearningModeResponse?> {
+            return arrayOfNulls(size)
+        }
+    }
+}
+
+data class Title(
+    val word: String?,
+    val nature: String?,
+    val offset: Int?,
+    val frequency: Int?,
+    val length: Int?,
+    val pinyin: String?,
+    val meaning: List<String>?,
+    val source: String?
+) : Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readValue(Int::class.java.classLoader) as? Int,
+        parcel.readValue(Int::class.java.classLoader) as? Int,
+        parcel.readValue(Int::class.java.classLoader) as? Int,
+        parcel.readString(),
+        parcel.createStringArrayList(),
+        parcel.readString()
+    )
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(word)
+        parcel.writeString(nature)
+        parcel.writeValue(offset)
+        parcel.writeValue(frequency)
+        parcel.writeValue(length)
+        parcel.writeString(pinyin)
+        parcel.writeStringList(meaning)
+        parcel.writeString(source)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Title> {
+        override fun createFromParcel(parcel: Parcel): Title {
+            return Title(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Title?> {
+            return arrayOfNulls(size)
+        }
+    }
+}

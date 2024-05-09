@@ -9,13 +9,12 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
-import com.example.flinfo.adapters.FragmentAdapter
+import com.example.flinfo.adaptors.FragmentAdapter
 import com.example.flinfo.architecture.NewsViewModel
 import com.example.flinfo.retrofit.RetrofitHelper
 import com.example.flinfo.utils.Constants.BUSINESS
