@@ -14,7 +14,6 @@ import com.bumptech.glide.Glide
 import com.example.flinfo.architecture.NewsViewModel
 import com.example.flinfo.utils.Constants.NEWS_UUID
 import androidx.lifecycle.Observer
-import com.example.flinfo.adaptors.LearningModeAdaptor
 
 class ReadFlinfoNewsActivity : AppCompatActivity() {
 
@@ -67,7 +66,7 @@ class ReadFlinfoNewsActivity : AppCompatActivity() {
         val uuid = intent.getStringExtra(NEWS_UUID)
         if (uuid != null) {
             viewModel.getArticleInLearningMode(uuid).observe(this, Observer { response ->
-                val intent = Intent(this, LearningModeAdaptor::class.java)
+                val intent = Intent(this, LearningModeActivity::class.java)
                 intent.putExtra("learningModeResponse", response)
                 startActivity(intent)
             })

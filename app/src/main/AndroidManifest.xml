@@ -28,9 +28,6 @@
             android:name=".LearningModeActivity"
             android:exported="false" />
         <activity
-            android:name=".adaptors.LearningModeAdaptor"
-            android:exported="false" />
-        <activity
             android:name=".LoginActivity"
             android:exported="false"/>
         <activity

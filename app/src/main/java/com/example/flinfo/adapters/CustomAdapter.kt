@@ -1,4 +1,4 @@
-package com.example.flinfo.adaptors
+package com.example.flinfo.adapters
 
 import android.content.Context
 import android.view.LayoutInflater

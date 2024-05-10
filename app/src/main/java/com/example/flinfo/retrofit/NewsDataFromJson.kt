@@ -124,7 +124,8 @@ data class LearningModeResponse(
     val uuid: String,
     val originalTitle: String,
     val originalSourceArticleText: String,
-    val title: List<Title>? = null,
+    val title: List<WordList>? = null,
+    val sourceArticleText: List<WordList>? = null,
     val createdAt: String,
     val lastModifiedAt: String
 ) : Parcelable {
@@ -132,7 +133,8 @@ data class LearningModeResponse(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
-        parcel.createTypedArrayList(Title)!!,
+        parcel.createTypedArrayList(WordList)!!,
+        parcel.createTypedArrayList(WordList)!!,
         parcel.readString()!!,
         parcel.readString()!!
     )
@@ -142,6 +144,7 @@ data class LearningModeResponse(
         parcel.writeString(originalTitle)
         parcel.writeString(originalSourceArticleText)
         parcel.writeTypedList(title)
+        parcel.writeTypedList(sourceArticleText)
         parcel.writeString(createdAt)
         parcel.writeString(lastModifiedAt)
     }
@@ -161,7 +164,7 @@ data class LearningModeResponse(
     }
 }
 
-data class Title(
+data class WordList(
     val word: String?,
     val nature: String?,
     val offset: Int?,
@@ -197,13 +200,20 @@ data class Title(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<Title> {
-        override fun createFromParcel(parcel: Parcel): Title {
-            return Title(parcel)
+    companion object CREATOR : Parcelable.Creator<WordList> {
+        override fun createFromParcel(parcel: Parcel): WordList {
+            return WordList(parcel)
         }
 
-        override fun newArray(size: Int): Array<Title?> {
+        override fun newArray(size: Int): Array<WordList?> {
             return arrayOfNulls(size)
         }
     }
 }
+
+data class WordInfo(
+    val word: String,
+    val pinyin: String?,
+    val meaning: List<String>?,
+    val nature: String?
+)

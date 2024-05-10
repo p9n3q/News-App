@@ -13,7 +13,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.flinfo.adaptors.CustomAdapter
+import com.example.flinfo.adapters.CustomAdapter
 import com.example.flinfo.architecture.NewsViewModel
 import com.example.flinfo.utils.Constants.NEWS_CONTENT
 import com.example.flinfo.utils.Constants.NEWS_DESCRIPTION
