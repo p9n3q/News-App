@@ -25,28 +25,86 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <TextView
-                android:id="@+id/title_text_view"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Title"
-                android:textColor="#333333"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/title_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@id/speak_title_button"
+                    android:text="Title"
+                    android:textColor="#1976D2"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/speak_title_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_baseline_play_arrow_24"
+                    app:tint="#1976D2" />
+
+            </RelativeLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:background="#CCCCCC" />
 
-            <TextView
-                android:id="@+id/paragraph_text_view"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/paragraph_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#212121"
+                    android:textSize="18sp" />
+            </RelativeLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#555555"
-                android:textSize="18sp" />
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+                <Switch
+                    android:id="@+id/pinyin_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Show Pinyin" />
+
+                <ImageButton
+                    android:id="@+id/speak_article_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_baseline_play_arrow_24"
+                    app:tint="#212121" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Speech Rate:" />
+
+                <SeekBar
+                    android:id="@+id/speech_rate_seekbar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

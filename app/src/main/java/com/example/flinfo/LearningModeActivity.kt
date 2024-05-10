@@ -10,16 +10,21 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.text.SpannableString
 import android.text.Spanned
+import android.text.TextPaint
 import android.text.style.ClickableSpan
 import android.text.method.LinkMovementMethod
 import android.util.Log
+import androidx.core.content.ContextCompat
+import android.content.Context
+import android.content.Intent
+import android.graphics.Color
 
 
 class WordAdapter(
     private val wordInfoList: List<WordInfo>,
     private val onWordClick: (WordInfo) -> Unit
 ) {
-    fun getSpannableText(): SpannableString {
+    fun getSpannableText(context: Context): SpannableString {
         val spannableString = SpannableString(wordInfoList.joinToString("") { it.word })
         var startIndex = 0
 
@@ -31,19 +36,20 @@ class WordAdapter(
                 override fun onClick(widget: View) {
                     onWordClick(wordInfo)
                 }
+                override fun updateDrawState(ds: TextPaint) {
+                    super.updateDrawState(ds)
+                    ds.isUnderlineText = false // Remove the underline
+                    ds.color = ContextCompat.getColor(context, R.color.word_color) // Set the desired color
+                }
             }
-
             val spanEndIndex = startIndex + word.length
             Log.d("SpannableText", "Setting span for word: $word, start: $startIndex, end: $spanEndIndex")
             spannableString.setSpan(clickableSpan, startIndex, spanEndIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-
             startIndex = spanEndIndex
         }
-
         return spannableString
     }
 }
-
 
 class LearningModeActivity : AppCompatActivity() {
 
@@ -54,6 +60,9 @@ class LearningModeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLearningModeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Initialize TextToSpeechHelper
+        TextToSpeechHelper.initialize(this)
 
         learningModeResponse = intent.getParcelableExtra("learningModeResponse")!!
 
@@ -72,9 +81,9 @@ class LearningModeActivity : AppCompatActivity() {
         }
 
         val titleWordsAdapter = WordAdapter(wordInfoList, ::onWordClick)
-        val spannableTitleString = titleWordsAdapter.getSpannableText()
+        val spannableTitleString = titleWordsAdapter.getSpannableText(this@LearningModeActivity)
 
-        learningModeResponse.title?.forEach { sourceArticleText ->
+        learningModeResponse.sourceArticleText?.forEach { sourceArticleText ->
             sourceArticleText.word?.let { word ->
                 wordInfoList.add(
                     WordInfo(
@@ -88,16 +97,30 @@ class LearningModeActivity : AppCompatActivity() {
         }
 
         val articleWordsAdapter = WordAdapter(wordInfoList, ::onWordClick)
-        val spannableArticleString = articleWordsAdapter.getSpannableText()
+        val spannableArticleString = articleWordsAdapter.getSpannableText(this@LearningModeActivity)
 
         binding.titleTextView.apply {
             text = spannableTitleString
             movementMethod = LinkMovementMethod.getInstance()
+            highlightColor = Color.TRANSPARENT
         }
         binding.paragraphTextView.apply {
             text = spannableArticleString
             movementMethod = LinkMovementMethod.getInstance()
+            highlightColor = Color.TRANSPARENT
         }
+        binding.speakTitleButton.setOnClickListener {
+            TextToSpeechHelper.speak(binding.titleTextView.text.toString())
+        }
+
+        binding.speakArticleButton.setOnClickListener {
+            TextToSpeechHelper.speak(binding.paragraphTextView.text.toString())
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        TextToSpeechHelper.onActivityResult(requestCode, resultCode, data, this)
     }
 
     private fun onWordClick(wordInfo: WordInfo) {
@@ -125,5 +148,10 @@ class LearningModeActivity : AppCompatActivity() {
 
         val dialog = dialogBuilder.create()
         dialog.show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        TextToSpeechHelper.shutdown()
     }
 }

@@ -18,4 +18,5 @@
     <color name="secondary_text">@color/grey_white</color>
     <!-- Primary button color -->
     <color name="primary_button">@color/royal_blue</color>
+    <color name="word_color">@color/dark_navy_blue</color>
 </resources>
