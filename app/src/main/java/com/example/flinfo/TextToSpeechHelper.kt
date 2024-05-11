@@ -57,6 +57,14 @@ object TextToSpeechHelper : TextToSpeech.OnInitListener {
         textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
     }
 
+    fun stop() {
+        textToSpeech?.stop()
+    }
+
+    fun setSpeechRate(rate: Float) {
+        textToSpeech?.setSpeechRate(rate)
+    }
+
     fun shutdown() {
         textToSpeech?.stop()
         textToSpeech?.shutdown()

@@ -18,6 +18,8 @@ import androidx.core.content.ContextCompat
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.widget.ImageButton
+import android.widget.SeekBar
 
 
 class WordAdapter(
@@ -113,10 +115,34 @@ class LearningModeActivity : AppCompatActivity() {
             TextToSpeechHelper.speak(binding.titleTextView.text.toString())
         }
 
+        val speakArticleButton: ImageButton = findViewById(R.id.speak_article_button)
+        var isSpeaking = false
+
         binding.speakArticleButton.setOnClickListener {
-            TextToSpeechHelper.speak(binding.paragraphTextView.text.toString())
+            isSpeaking = if (isSpeaking) {
+                // Stop the speech
+                TextToSpeechHelper.stop()
+                speakArticleButton.setImageResource(R.drawable.ic_baseline_play_arrow_24)
+                false
+            } else {
+                // Start the speech
+                val text = binding.paragraphTextView.text.toString()
+                TextToSpeechHelper.speak(text)
+                speakArticleButton.setImageResource(R.drawable.ic_baseline_pause_24)
+                true
+            }
         }
+
+        binding.speechRateSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                val rate = progress.toFloat() / 50.0f // Adjust the range as needed
+                TextToSpeechHelper.setSpeechRate(rate)
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

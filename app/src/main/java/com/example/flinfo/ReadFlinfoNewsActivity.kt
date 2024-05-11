@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -54,6 +55,7 @@ class ReadFlinfoNewsActivity : AppCompatActivity() {
                     Html.fromHtml(contentHtml)
                 }
                 contentTextView.text = contentSpanned
+                learningModeButton.visibility = View.VISIBLE
             })
         }
 
