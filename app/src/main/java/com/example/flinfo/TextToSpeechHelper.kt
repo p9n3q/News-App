@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import android.widget.ImageButton
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import java.util.*
 
@@ -108,5 +110,31 @@ object TextToSpeechHelper : TextToSpeech.OnInitListener {
             .setMessage(message)
             .setPositiveButton("OK", null)
             .show()
+    }
+}
+
+class ToggleableSpeakButton(
+    context: Context,
+    private val textView: TextView,
+    playIcon: Int = R.drawable.ic_baseline_play_arrow_24,
+    pauseIcon: Int = R.drawable.ic_baseline_pause_24
+) : ImageButton(context) {
+
+    private var isSpeaking = false
+
+    init {
+        setImageResource(playIcon)
+        setOnClickListener {
+            isSpeaking = if (isSpeaking) {
+                TextToSpeechHelper.stop()
+                setImageResource(playIcon)
+                false
+            } else {
+                val text = textView.text.toString()
+                TextToSpeechHelper.speak(text)
+                setImageResource(pauseIcon)
+                true
+            }
+        }
     }
 }
