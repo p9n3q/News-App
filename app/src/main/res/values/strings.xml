@@ -14,5 +14,8 @@
     <string name="email">Email</string>
     <string name="todo">TODO</string>
     <string name="learning_mode">Learning Mode</string>
+    <string name="keyword_dictionary">Dictionary</string>
+    <string name="articles_feed">Feed</string>
+    <string name="learning_exercises">Exercises</string>
 
 </resources>

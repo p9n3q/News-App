@@ -1,44 +1,58 @@
 package com.example.flinfo.adapters
 
 import android.content.Context
+import android.text.Layout
 import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextPaint
+import android.text.style.AlignmentSpan
 import android.text.style.ClickableSpan
-import android.util.Log
+import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
+import android.text.style.SuperscriptSpan
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.example.flinfo.R
 import com.example.flinfo.retrofit.WordInfo
-import kotlin.reflect.KFunction2
-
 class WordAdapter(
     private val wordInfoList: List<WordInfo>,
-    private val onWordClick: KFunction2<Context, WordInfo, Unit>
+    private val onWordClick: (Context, WordInfo) -> Unit,
+    private val showPinyin: Boolean
 ) {
     fun getSpannableText(context: Context): SpannableString {
-        val spannableString = SpannableString(wordInfoList.joinToString("") { it.word })
-        var startIndex = 0
+        val spannableString = SpannableStringBuilder()
 
         wordInfoList.forEach { wordInfo ->
             val word = wordInfo.word
-            Log.d("SpannableText", "Processing word: $word")
+            val pinyin = wordInfo.pinyin
+
+            val startIndex = spannableString.length
+            spannableString.append(word)
+            val endIndex = spannableString.length
 
             val clickableSpan = object : ClickableSpan() {
                 override fun onClick(widget: View) {
-                    onWordClick(wordInfo)
+                    onWordClick(context, wordInfo)
                 }
+
                 override fun updateDrawState(ds: TextPaint) {
                     super.updateDrawState(ds)
-                    ds.isUnderlineText = false // Remove the underline
-                    ds.color = ContextCompat.getColor(context, R.color.word_color) // Set the desired color
+                    ds.isUnderlineText = false
+                    ds.color = ContextCompat.getColor(context, R.color.word_color)
                 }
             }
-            val spanEndIndex = startIndex + word.length
-            Log.d("SpannableText", "Setting span for word: $word, start: $startIndex, end: $spanEndIndex")
-            spannableString.setSpan(clickableSpan, startIndex, spanEndIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            startIndex = spanEndIndex
+            spannableString.setSpan(clickableSpan, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            if (showPinyin && pinyin != null) {
+                spannableString.append(" ")
+
+                val customSpan = VerticalTextSpan(pinyin)
+                spannableString.setSpan(customSpan, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
         }
-        return spannableString
+
+        return SpannableString(spannableString)
     }
 }
+
