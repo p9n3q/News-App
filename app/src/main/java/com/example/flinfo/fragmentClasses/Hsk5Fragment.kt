@@ -21,15 +21,15 @@ import com.example.flinfo.utils.Constants.NEWS_SOURCE
 import com.example.flinfo.utils.Constants.NEWS_TITLE
 import com.example.flinfo.utils.Constants.NEWS_URL
 
-class HealthFragment : Fragment() {
+class Hsk5Fragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        val view = inflater.inflate(R.layout.fragment_health, container, false)
-        val newsData: MutableList<NewsModel> = MainActivity.healthNews
+        // Inflate the layout for this fragment
+        val view = inflater.inflate(R.layout.fragment_sports, container, false)
+        val newsData: MutableList<NewsModel> = MainActivity.hsk5News
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -48,18 +48,17 @@ class HealthFragment : Fragment() {
                     putExtra(NEWS_PUBLICATION_TIME, newsData[position].time)
                     putExtra(NEWS_CONTENT, newsData[position].content)
                 }
-
                 startActivity(intent)
             }
         })
 
-        // Ignore
+        //ignore
         adapter.setOnItemLongClickListener(object : CustomAdapter.OnItemLongClickListener {
-            override fun onItemLongClick(position: Int) = Unit
+            override fun onItemLongClick(position: Int) {
+            }
         })
 
         return view
     }
-
 
 }

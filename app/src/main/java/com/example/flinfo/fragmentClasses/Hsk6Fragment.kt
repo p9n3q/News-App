@@ -21,15 +21,15 @@ import com.example.flinfo.utils.Constants.NEWS_SOURCE
 import com.example.flinfo.utils.Constants.NEWS_TITLE
 import com.example.flinfo.utils.Constants.NEWS_URL
 
-class BusinessFragment : Fragment() {
+class Hsk6Fragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_business, container, false)
-        val newsData: MutableList<NewsModel> = MainActivity.hsk1News
+        val view = inflater.inflate(R.layout.fragment_tech, container, false)
+        val newsData: MutableList<NewsModel> = MainActivity.hsk6News
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -50,7 +50,6 @@ class BusinessFragment : Fragment() {
                 }
 
                 startActivity(intent)
-
             }
         })
 

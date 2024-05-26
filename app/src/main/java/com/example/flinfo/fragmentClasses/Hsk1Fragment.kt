@@ -21,15 +21,15 @@ import com.example.flinfo.utils.Constants.NEWS_SOURCE
 import com.example.flinfo.utils.Constants.NEWS_TITLE
 import com.example.flinfo.utils.Constants.NEWS_URL
 
-class SportsFragment : Fragment() {
+class Hsk1Fragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_sports, container, false)
-        val newsData: MutableList<NewsModel> = MainActivity.sportsNews
+        val view = inflater.inflate(R.layout.fragment_hsk1, container, false)
+        val newsData: MutableList<NewsModel> = MainActivity.hsk1News
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -37,8 +37,8 @@ class SportsFragment : Fragment() {
         recyclerView.adapter = adapter
 
         adapter.setOnItemClickListener(object : CustomAdapter.OnItemClickListener {
-            override fun onItemClick(position: Int) {
 
+            override fun onItemClick(position: Int) {
                 val intent = Intent(context, ReadNewsActivity::class.java).apply {
                     putExtra(NEWS_URL, newsData[position].url)
                     putExtra(NEWS_TITLE, newsData[position].headLine)
@@ -48,14 +48,15 @@ class SportsFragment : Fragment() {
                     putExtra(NEWS_PUBLICATION_TIME, newsData[position].time)
                     putExtra(NEWS_CONTENT, newsData[position].content)
                 }
+
                 startActivity(intent)
+
             }
         })
 
-        //ignore
+        // Ignore
         adapter.setOnItemLongClickListener(object : CustomAdapter.OnItemLongClickListener {
-            override fun onItemLongClick(position: Int) {
-            }
+            override fun onItemLongClick(position: Int) = Unit
         })
 
         return view

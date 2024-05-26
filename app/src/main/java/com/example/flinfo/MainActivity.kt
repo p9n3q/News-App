@@ -17,14 +17,14 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.flinfo.adapters.FragmentAdapter
 import com.example.flinfo.architecture.NewsViewModel
 import com.example.flinfo.retrofit.RetrofitHelper
-import com.example.flinfo.utils.Constants.BUSINESS
-import com.example.flinfo.utils.Constants.ENTERTAINMENT
 import com.example.flinfo.utils.Constants.GENERAL
-import com.example.flinfo.utils.Constants.HEALTH
 import com.example.flinfo.utils.Constants.HOME
-import com.example.flinfo.utils.Constants.SCIENCE
-import com.example.flinfo.utils.Constants.SPORTS
-import com.example.flinfo.utils.Constants.TECHNOLOGY
+import com.example.flinfo.utils.Constants.HSK1
+import com.example.flinfo.utils.Constants.HSK2
+import com.example.flinfo.utils.Constants.HSK3
+import com.example.flinfo.utils.Constants.HSK4
+import com.example.flinfo.utils.Constants.HSK5
+import com.example.flinfo.utils.Constants.HSK6
 import com.example.flinfo.utils.Constants.TOTAL_NEWS_TAB
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.tabs.TabLayout
@@ -33,9 +33,9 @@ class MainActivity : AppCompatActivity() {
 
     // Tabs Title
     private val newsCategories = arrayOf(
-        HOME, BUSINESS,
-        ENTERTAINMENT, SCIENCE,
-        SPORTS, TECHNOLOGY, HEALTH
+        HOME, HSK1,
+        HSK2, HSK3,
+        HSK4, HSK5, HSK6
     )
 
     private lateinit var viewModel: NewsViewModel
@@ -74,12 +74,12 @@ class MainActivity : AppCompatActivity() {
 
         // Send request call for news data
         requestNews(GENERAL, generalNews)
-        requestNews(BUSINESS, businessNews)
-        requestNews(ENTERTAINMENT, entertainmentNews)
-        requestNews(HEALTH, healthNews)
-        requestNews(SCIENCE, scienceNews)
-        requestNews(SPORTS, sportsNews)
-        requestNews(TECHNOLOGY, techNews)
+        requestHskNews(HSK1, hsk1News)
+        requestHskNews(HSK2, hsk2News)
+        requestHskNews(HSK3, hsk3News)
+        requestHskNews(HSK4, hsk4News)
+        requestHskNews(HSK5, hsk5News)
+        requestHskNews(HSK6, hsk6News)
 
         fragmentAdapter = FragmentAdapter(supportFragmentManager, lifecycle)
         viewPager.adapter = fragmentAdapter
@@ -89,6 +89,25 @@ class MainActivity : AppCompatActivity() {
 
     private fun requestNews(newsCategory: String, newsData: MutableList<NewsModel>) {
         viewModel.getNews()?.observe(this) {
+            newsData.addAll(it)
+            totalRequestCount += 1
+
+            // If main fragment loaded then attach the fragment to viewPager
+            if (newsCategory == GENERAL) {
+                shimmerLayout.stopShimmer()
+                shimmerLayout.hideShimmer()
+                shimmerLayout.visibility = View.GONE
+                setViewPager()
+            }
+
+            if (totalRequestCount == TOTAL_NEWS_TAB) {
+                viewPager.offscreenPageLimit = 7
+            }
+        }
+    }
+
+    private fun requestHskNews(newsCategory: String, newsData: MutableList<NewsModel>) {
+        viewModel.getHskNews(newsCategory)?.observe(this) {
             newsData.addAll(it)
             totalRequestCount += 1
 
@@ -157,12 +176,12 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         var generalNews: ArrayList<NewsModel> = ArrayList()
-        var entertainmentNews: MutableList<NewsModel> = mutableListOf()
-        var businessNews: MutableList<NewsModel> = mutableListOf()
-        var healthNews: MutableList<NewsModel> = mutableListOf()
-        var scienceNews: MutableList<NewsModel> = mutableListOf()
-        var sportsNews: MutableList<NewsModel> = mutableListOf()
-        var techNews: MutableList<NewsModel> = mutableListOf()
+        var hsk1News: MutableList<NewsModel> = mutableListOf()
+        var hsk2News: MutableList<NewsModel> = mutableListOf()
+        var hsk3News: MutableList<NewsModel> = mutableListOf()
+        var hsk4News: MutableList<NewsModel> = mutableListOf()
+        var hsk5News: MutableList<NewsModel> = mutableListOf()
+        var hsk6News: MutableList<NewsModel> = mutableListOf()
         var apiRequestError = false
         var errorMessage = "error"
     }

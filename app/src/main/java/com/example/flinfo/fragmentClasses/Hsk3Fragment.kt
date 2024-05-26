@@ -21,15 +21,15 @@ import com.example.flinfo.utils.Constants.NEWS_SOURCE
 import com.example.flinfo.utils.Constants.NEWS_TITLE
 import com.example.flinfo.utils.Constants.NEWS_URL
 
-class ScienceFragment : Fragment() {
+class Hsk3Fragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        val view = inflater.inflate(R.layout.fragment_science, container, false)
-        val newsData: MutableList<NewsModel> = MainActivity.scienceNews
+        val view = inflater.inflate(R.layout.fragment_health, container, false)
+        val newsData: MutableList<NewsModel> = MainActivity.hsk3News
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -37,7 +37,6 @@ class ScienceFragment : Fragment() {
         recyclerView.adapter = adapter
 
         adapter.setOnItemClickListener(object : CustomAdapter.OnItemClickListener {
-
             override fun onItemClick(position: Int) {
 
                 val intent = Intent(context, ReadNewsActivity::class.java).apply {

@@ -15,7 +15,19 @@ class NewsViewModel : ViewModel() {
     //get news from API
     fun getNews(): MutableLiveData<List<NewsModel>>? {
         val newsLiveData = NewsRepository().getNewsApiCall(1, 20)
+        val mappedNewsLiveData = MediatorLiveData<List<NewsModel>>().apply {
+            addSource(newsLiveData) { newsArticles ->
+                value = newsArticles?.map { newsArticle ->
+                    newsArticle.toNewsModel()
+                }
+            }
+        }
+        return mappedNewsLiveData
+    }
 
+    //get hsk level news from API
+    fun getHskNews(hskLevel: String): MutableLiveData<List<NewsModel>>? {
+        val newsLiveData = NewsRepository().getHskNewsApiCall(hskLevel, "Mandarin", 1, 20)
         val mappedNewsLiveData = MediatorLiveData<List<NewsModel>>().apply {
             addSource(newsLiveData) { newsArticles ->
                 value = newsArticles?.map { newsArticle ->

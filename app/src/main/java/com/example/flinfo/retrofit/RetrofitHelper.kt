@@ -34,8 +34,6 @@ object RetrofitHelper {
     }
 
     fun getInstance(baseUrl: String): Retrofit {
-        //authorizationToken = "BqlfnnHB7bVJZl2Vw4owClSdjRAtX7V8O60TAorcDlczCpTIdjgTiIkjHvmtF5gpI8bJrXz3b5epcJvu1OBzNEysLmGd68wv/G7t8Rltv1G49rqwL264V1qvN6XY4SmnLa3mu9qB8TfdT0R6aaAODpBoiyiOwGh+Ofz3MCJypV62j6nwXYejyfJ2EyEZ82/J9k+9dUauaQICoMyoO4mOaz3ywvnogzW8SZCGGuYH8V0oNVyP3WcRXztQv6Z9ltz4PYJOpjzvd17IDIUQNcSWBQC20Sul5rfufJRypjHejJePEiNbAedBJwzXKCG0LLvK8aZawWykoYfldee1K+i/MToIPWiDjxepgaUvs7cMIB2QMLpN5pumwPNRm5M/aD4mv++XSzFqxdl6Ey+L7LYGg/w0whZpzTr+f8Vdk7nqfXkJgD+XacOr87Qzogr2Zmo7Wf+A5eY5HeP3Uem1dXuLMkN4W1fJBtrqmm5m7Rml0LIYNUsUG/5aywIltazpvOR2SVou4vfU2+EiQNc8mO/KxbJCX1gIOcWZdLxJNaWUqN7b08OWuHtwJfFllyrdGxHH9oaMDR89ySyUxBu/hjfuA6lVslBRlek/FdT/aE9C66tDK0FPXkYc4iUaI8KD+Xwrz81ULwEmH+pn+PRzUjzHnsMLffAdFPk0M0LFDy/NzEE="
-
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
