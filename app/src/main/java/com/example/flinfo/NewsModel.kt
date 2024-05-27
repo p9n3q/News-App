@@ -3,6 +3,7 @@ package com.example.flinfo
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 @Entity(tableName = "News_Table")
 data class NewsModel(
@@ -31,4 +32,4 @@ data class NewsModel(
 
     @ColumnInfo(name = "content")
     val content: String?
-)
+) : Serializable

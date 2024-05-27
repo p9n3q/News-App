@@ -66,15 +66,11 @@ class GeneralFragment : Fragment() {
 
         adapter.setOnItemClickListener(object : CustomAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
+                val uuidList = newsDataForDown.map { it.uuid }
                 val intent = Intent(context, ReadFlinfoNewsActivity::class.java).apply {
                     putExtra(Constants.NEWS_UUID, newsDataForDown[position].uuid)
-                    putExtra(Constants.NEWS_URL, newsDataForDown[position].url)
-                    putExtra(Constants.NEWS_TITLE, newsDataForDown[position].headLine)
-                    putExtra(Constants.NEWS_IMAGE_URL, newsDataForDown[position].image)
-                    putExtra(Constants.NEWS_DESCRIPTION, newsDataForDown[position].description)
-                    putExtra(Constants.NEWS_SOURCE, newsDataForDown[position].source)
-                    putExtra(Constants.NEWS_PUBLICATION_TIME, newsDataForDown[position].time)
-                    putExtra(Constants.NEWS_CONTENT, newsDataForDown[position].content)
+                    putStringArrayListExtra("uuid_list", ArrayList(uuidList))  // Pass the list of UUIDs
+                    putExtra("current_position", position)  // Pass the current position
                 }
                 startActivity(intent)
             }
@@ -109,15 +105,11 @@ class GeneralFragment : Fragment() {
                 newsTitle.text = newsDataForTopHeadlines[position].headLine
 
                 view.setOnClickListener {
+                    val uuidList = newsDataForTopHeadlines.map { it.uuid }
                     val intent = Intent(context, ReadFlinfoNewsActivity::class.java).apply {
                         putExtra(Constants.NEWS_UUID, newsDataForTopHeadlines[position].uuid)
-                        putExtra(Constants.NEWS_URL, newsDataForTopHeadlines[position].url)
-                        putExtra(Constants.NEWS_TITLE, newsDataForTopHeadlines[position].headLine)
-                        putExtra(Constants.NEWS_IMAGE_URL, newsDataForTopHeadlines[position].image)
-                        putExtra(Constants.NEWS_DESCRIPTION, newsDataForTopHeadlines[position].description)
-                        putExtra(Constants.NEWS_SOURCE, newsDataForTopHeadlines[position].source)
-                        putExtra(Constants.NEWS_PUBLICATION_TIME, newsDataForTopHeadlines[position].time)
-                        putExtra(Constants.NEWS_CONTENT, newsDataForTopHeadlines[position].content)
+                        putStringArrayListExtra("uuid_list", ArrayList(uuidList))  // Pass the list of UUIDs
+                        putExtra("current_position", position)  // Pass the current position
                     }
                     startActivity(intent)
                 }
