@@ -8,7 +8,7 @@ import retrofit2.http.Query
 interface NewsApi {
 
     @GET("/trending")
-    fun getNews(@Query("pageNumber") pageNumber: Int, @Query("recordCount") recordCount: Int): Call<TrendingNewsResponse>
+    fun getNews(@Query("pageNumber") pageNumber: Int, @Query("recordCount") recordCount: Int, @Query("language") language: String = "Mandarin"): Call<TrendingNewsResponse>
 
     @GET("doc/{uuid}")
     fun getArticle(@Path("uuid") uuid: String): Call<ArticleResponse>
