@@ -1,14 +1,15 @@
 package com.example.flinfo.utils
 
 object Constants {
+    const val LANGUAGE = "mandarin"
     const val HOME = "Home"
     const val GENERAL = "general"
-    const val SCIENCE = "science"
-    const val HEALTH = "health"
-    const val ENTERTAINMENT = "entertainment"
-    const val BUSINESS = "business"
-    const val TECHNOLOGY = "technology"
-    const val SPORTS = "sports"
+    const val SCIENCE = "hsk3"
+    const val HEALTH = "hsk6"
+    const val ENTERTAINMENT = "hsk2"
+    const val BUSINESS = "hsk1"
+    const val TECHNOLOGY = "hsk5"
+    const val SPORTS = "hsk4"
     const val NEWS_URL = "news url"
     const val NEWS_UUID = "news uuid"
     const val NEWS_TITLE = "news title"

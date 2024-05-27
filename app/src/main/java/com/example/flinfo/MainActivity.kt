@@ -22,6 +22,7 @@ import com.example.flinfo.utils.Constants.ENTERTAINMENT
 import com.example.flinfo.utils.Constants.GENERAL
 import com.example.flinfo.utils.Constants.HEALTH
 import com.example.flinfo.utils.Constants.HOME
+import com.example.flinfo.utils.Constants.LANGUAGE
 import com.example.flinfo.utils.Constants.SCIENCE
 import com.example.flinfo.utils.Constants.SPORTS
 import com.example.flinfo.utils.Constants.TECHNOLOGY
@@ -74,12 +75,12 @@ class MainActivity : AppCompatActivity() {
 
         // Send request call for news data
         requestNews(GENERAL, generalNews)
-        requestNews(BUSINESS, businessNews)
-        requestNews(ENTERTAINMENT, entertainmentNews)
-        requestNews(HEALTH, healthNews)
-        requestNews(SCIENCE, scienceNews)
-        requestNews(SPORTS, sportsNews)
-        requestNews(TECHNOLOGY, techNews)
+        requestHskNews(LANGUAGE, BUSINESS, businessNews)
+        requestHskNews(LANGUAGE,ENTERTAINMENT, entertainmentNews)
+        requestHskNews(LANGUAGE, HEALTH, healthNews)
+        requestHskNews(LANGUAGE, SCIENCE, scienceNews)
+        requestHskNews(LANGUAGE, SPORTS, sportsNews)
+        requestHskNews(LANGUAGE, TECHNOLOGY, techNews)
 
         fragmentAdapter = FragmentAdapter(supportFragmentManager, lifecycle)
         viewPager.adapter = fragmentAdapter
@@ -94,6 +95,25 @@ class MainActivity : AppCompatActivity() {
 
             // If main fragment loaded then attach the fragment to viewPager
             if (newsCategory == GENERAL) {
+                shimmerLayout.stopShimmer()
+                shimmerLayout.hideShimmer()
+                shimmerLayout.visibility = View.GONE
+                setViewPager()
+            }
+
+            if (totalRequestCount == TOTAL_NEWS_TAB) {
+                viewPager.offscreenPageLimit = 7
+            }
+        }
+    }
+
+    private fun requestHskNews(language: String, hskLevel: String, newsData: MutableList<NewsModel>) {
+        viewModel.getHskNews(language, hskLevel)?.observe(this) {
+            newsData.addAll(it)
+            totalRequestCount += 1
+
+            // If main fragment loaded then attach the fragment to viewPager
+            if (hskLevel == GENERAL) {
                 shimmerLayout.stopShimmer()
                 shimmerLayout.hideShimmer()
                 shimmerLayout.visibility = View.GONE

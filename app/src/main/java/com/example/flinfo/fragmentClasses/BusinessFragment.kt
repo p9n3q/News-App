@@ -6,13 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flinfo.MainActivity
 import com.example.flinfo.NewsModel
 import com.example.flinfo.R
+import com.example.flinfo.ReadFlinfoNewsActivity
 import com.example.flinfo.ReadNewsActivity
 import com.example.flinfo.adapters.CustomAdapter
+import com.example.flinfo.architecture.NewsViewModel
+import com.example.flinfo.utils.Constants
 import com.example.flinfo.utils.Constants.NEWS_CONTENT
 import com.example.flinfo.utils.Constants.NEWS_DESCRIPTION
 import com.example.flinfo.utils.Constants.NEWS_IMAGE_URL
@@ -20,8 +24,13 @@ import com.example.flinfo.utils.Constants.NEWS_PUBLICATION_TIME
 import com.example.flinfo.utils.Constants.NEWS_SOURCE
 import com.example.flinfo.utils.Constants.NEWS_TITLE
 import com.example.flinfo.utils.Constants.NEWS_URL
+import com.example.flinfo.utils.Constants.NEWS_UUID
 
 class BusinessFragment : Fragment() {
+
+    private lateinit var viewModel: NewsViewModel
+    private lateinit var adapter: CustomAdapter
+    private lateinit var newsData: MutableList<NewsModel>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,17 +38,26 @@ class BusinessFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_business, container, false)
-        val newsData: MutableList<NewsModel> = MainActivity.businessNews
+        newsData = mutableListOf()
+
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
-        recyclerView.layoutManager =
-            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val adapter = CustomAdapter(newsData)
+        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        adapter = CustomAdapter(newsData)
         recyclerView.adapter = adapter
 
-        adapter.setOnItemClickListener(object : CustomAdapter.OnItemClickListener {
+        viewModel = ViewModelProvider(this).get(NewsViewModel::class.java)
 
+        // Fetch HSK1 news for Business
+        viewModel.getHskNews("mandarin", "hsk1")?.observe(viewLifecycleOwner, { newsList ->
+            newsData.clear()
+            newsData.addAll(newsList)
+            adapter.notifyDataSetChanged()
+        })
+
+        adapter.setOnItemClickListener(object : CustomAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                val intent = Intent(context, ReadNewsActivity::class.java).apply {
+                val intent = Intent(context, ReadFlinfoNewsActivity::class.java).apply {
+                    putExtra(NEWS_UUID, newsData[position].uuid)
                     putExtra(NEWS_URL, newsData[position].url)
                     putExtra(NEWS_TITLE, newsData[position].headLine)
                     putExtra(NEWS_IMAGE_URL, newsData[position].image)
@@ -48,9 +66,7 @@ class BusinessFragment : Fragment() {
                     putExtra(NEWS_PUBLICATION_TIME, newsData[position].time)
                     putExtra(NEWS_CONTENT, newsData[position].content)
                 }
-
                 startActivity(intent)
-
             }
         })
 
@@ -61,5 +77,4 @@ class BusinessFragment : Fragment() {
 
         return view
     }
-
 }

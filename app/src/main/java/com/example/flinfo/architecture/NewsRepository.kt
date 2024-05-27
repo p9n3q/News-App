@@ -110,6 +110,57 @@ class NewsRepository {
         return newsList
     }
 
+    fun getHskNewsApiCall(language: String, hskLevel: String, pageNumber: Int, recordCount: Int): MutableLiveData<List<NewsArticle>> {
+
+        val newsList = MutableLiveData<List<NewsArticle>>()
+
+        val apiService = RetrofitHelper.getNewsApiService()
+        val call = apiService.getHskNews(language, hskLevel, pageNumber, recordCount)
+
+        call.enqueue(object : Callback<TrendingNewsResponse> {
+            override fun onResponse(
+                call: Call<TrendingNewsResponse>,
+                response: Response<TrendingNewsResponse>
+            ) {
+
+                if (response.isSuccessful) {
+
+                    val body = response.body()
+                    Log.d("API_RESPONSE", "Success: ${body}")
+
+                    if (body != null) {
+                        newsList.value = body.results
+                        Log.d("API_RESPONSE", "Success: ${newsList.value}")
+                    }
+
+                } else {
+
+                    val jsonObj: JSONObject?
+
+                    try {
+                        jsonObj = response.errorBody()?.string()?.let { JSONObject(it) }
+                        if (jsonObj != null) {
+                            handleAuthorizationError(response, jsonObj.getString("message"))
+                            val tempNewsList = mutableListOf<NewsArticle>()
+                            newsList.value = tempNewsList
+                            Log.d("API_RESPONSE", "Error: ${jsonObj.getString("message")}")
+                        }
+                    } catch (e: JSONException) {
+                        Log.d("JSONException", "" + e.message)
+                    }
+
+                }
+            }
+
+            override fun onFailure(call: Call<TrendingNewsResponse>, t: Throwable) {
+                handleAuthorizationError(null, t.localizedMessage ?: "Unknown error")
+                Log.d("err_msg", "msg" + t.localizedMessage)
+            }
+        })
+
+        return newsList
+    }
+
     fun getArticleApiCall(uuid: String): LiveData<NewsModel> {
         val articleLiveData = MutableLiveData<NewsModel>()
 

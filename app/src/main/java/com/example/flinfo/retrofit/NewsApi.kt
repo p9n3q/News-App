@@ -10,6 +10,14 @@ interface NewsApi {
     @GET("/trending")
     fun getNews(@Query("pageNumber") pageNumber: Int, @Query("recordCount") recordCount: Int, @Query("language") language: String = "Mandarin"): Call<TrendingNewsResponse>
 
+    @GET("fl-learn/{language}/{hskLevel}")
+    fun getHskNews(
+        @Path("language") language: String,
+        @Path("hskLevel") hskLevel: String,
+        @Query("pageNumber") pageNumber: Int,
+        @Query("recordCount") recordCount: Int
+    ): Call<TrendingNewsResponse>
+
     @GET("doc/{uuid}")
     fun getArticle(@Path("uuid") uuid: String): Call<ArticleResponse>
 

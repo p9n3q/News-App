@@ -11,10 +11,25 @@ import com.example.flinfo.retrofit.LearningModeResponse
 class NewsViewModel : ViewModel() {
 
     private var newsLiveData: MutableLiveData<List<NewsModel>>? = null
+    private val _learningModeData = MutableLiveData<LearningModeResponse>()
+    val learningModeData: LiveData<LearningModeResponse> get() = _learningModeData
 
     //get news from API
     fun getNews(): MutableLiveData<List<NewsModel>>? {
         val newsLiveData = NewsRepository().getNewsApiCall(1, 20)
+
+        val mappedNewsLiveData = MediatorLiveData<List<NewsModel>>().apply {
+            addSource(newsLiveData) { newsArticles ->
+                value = newsArticles?.map { newsArticle ->
+                    newsArticle.toNewsModel()
+                }
+            }
+        }
+        return mappedNewsLiveData
+    }
+
+    fun getHskNews(language: String, hskLevel: String): MutableLiveData<List<NewsModel>>? {
+        val newsLiveData = NewsRepository().getHskNewsApiCall(language, hskLevel, 1, 20)
 
         val mappedNewsLiveData = MediatorLiveData<List<NewsModel>>().apply {
             addSource(newsLiveData) { newsArticles ->
@@ -47,5 +62,11 @@ class NewsViewModel : ViewModel() {
 
     fun getArticleInLearningMode(uuid: String): LiveData<LearningModeResponse> {
         return NewsRepository().getArticleInLearningModeApiCall(uuid)
+    }
+
+    fun fetchLearningModeData(uuid: String) {
+        getArticleInLearningMode(uuid).observeForever {
+            _learningModeData.postValue(it)
+        }
     }
 }

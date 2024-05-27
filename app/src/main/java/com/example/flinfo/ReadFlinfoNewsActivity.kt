@@ -47,15 +47,23 @@ class ReadFlinfoNewsActivity : AppCompatActivity() {
                 val imageUrl = newsModel.image
                 Glide.with(this).load(imageUrl).into(findViewById(R.id.imageView))
                 findViewById<TextView>(R.id.headline).text = newsModel.headLine
-                val contentHtml = newsModel.content?:""
+                val contentHtml = newsModel.content ?: ""
+                val formattedContentHtml = contentHtml.replace("\n", "<br>")
                 val contentTextView: TextView = findViewById(R.id.content)
                 val contentSpanned = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    Html.fromHtml(contentHtml, Html.FROM_HTML_MODE_LEGACY)
+                    Html.fromHtml(formattedContentHtml, Html.FROM_HTML_MODE_LEGACY)
                 } else {
                     Html.fromHtml(contentHtml)
                 }
                 contentTextView.text = contentSpanned
                 learningModeButton.visibility = View.VISIBLE
+
+                // Fetch learning mode data asynchronously and store it
+                viewModel.getArticleInLearningMode(uuid).observe(this, Observer { response ->
+                    if (response != null) {
+                        viewModel.fetchLearningModeData(uuid)
+                    }
+                })
             })
         }
 
@@ -65,13 +73,12 @@ class ReadFlinfoNewsActivity : AppCompatActivity() {
     }
 
     private fun openLearningMode() {
-        val uuid = intent.getStringExtra(NEWS_UUID)
-        if (uuid != null) {
-            viewModel.getArticleInLearningMode(uuid).observe(this, Observer { response ->
+        viewModel.learningModeData.observe(this, Observer { response ->
+            if (response != null) {
                 val intent = Intent(this, LearningModeActivity::class.java)
                 intent.putExtra("learningModeResponse", response)
                 startActivity(intent)
-            })
-        }
+            }
+        })
     }
 }
