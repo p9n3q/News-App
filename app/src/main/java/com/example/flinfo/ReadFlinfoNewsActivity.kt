@@ -104,7 +104,10 @@ class ReadFlinfoNewsActivity : AppCompatActivity(), GestureDetector.OnGestureLis
 
         contentView.animate().alpha(0f).setDuration(300).withEndAction {
             val contentHtml = newsModel.content ?: ""
-            val formattedContentHtml = contentHtml.replace("\n", "<br>")
+            val pattern = """Translated Excerpt\..*</a>:\n\n""".toRegex()
+            val replacementText = "\n"
+            val articleTextHtml = contentHtml.replace(pattern, replacementText)
+            val formattedContentHtml = articleTextHtml.replace("\n", "<br>")
             val contentSpanned = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Html.fromHtml(formattedContentHtml, Html.FROM_HTML_MODE_LEGACY)
             } else {
