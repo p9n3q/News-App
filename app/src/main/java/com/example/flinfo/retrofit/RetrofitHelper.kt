@@ -47,6 +47,8 @@ object RetrofitHelper {
                     authorizationToken?.let {
                         requestBuilder.header("Authorization", "Bearer $it")
                     }
+                    requestBuilder.header("fullOutput", "true")
+                    requestBuilder.header("esQuery", "true")
                     val request = requestBuilder.build()
                     return chain.proceed(request)
                 }

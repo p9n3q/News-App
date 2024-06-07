@@ -66,7 +66,7 @@ data class NewsArticle(
             url = this.sourceArticleUrl,
             source = this.websiteTitle,
             time = this.lastModifiedAtAsText,
-            content = this.translatedSummary
+            content = this.translatedText
         )
     }
 }
