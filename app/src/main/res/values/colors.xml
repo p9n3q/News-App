@@ -12,6 +12,8 @@
     <color name="black_for_bg">#171717</color>
     <color name="shimmer_bg_color">#dddddd</color>
     <color name="colorPrimary">#FFC107</color>
+    <color name="flinfo_theme_color">#214364</color> <!-- Flinfo theme color -->
+    <color name="fab_color">#B0C4DE</color> <!-- color -->
     <!-- Primary background color -->
     <color name="primary_background">@color/dark_navy_blue</color>
     <!-- Secondary text color -->

@@ -23,6 +23,7 @@ import com.jama.carouselview.CarouselView
 import com.jama.carouselview.enums.IndicatorAnimationType
 import com.jama.carouselview.enums.OffsetType
 import com.squareup.picasso.Picasso
+import com.google.gson.Gson
 
 class GeneralFragment : Fragment() {
 
@@ -66,11 +67,11 @@ class GeneralFragment : Fragment() {
 
         adapter.setOnItemClickListener(object : CustomAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                val uuidList = newsDataForDown.map { it.uuid }
+                val combinedList = (newsDataForTopHeadlines + newsDataForDown).toMutableList()
+                val combinedPosition = position + Constants.TOP_HEADLINES_COUNT
                 val intent = Intent(context, ReadFlinfoNewsActivity::class.java).apply {
-                    putExtra(Constants.NEWS_UUID, newsDataForDown[position].uuid)
-                    putStringArrayListExtra("uuid_list", ArrayList(uuidList))  // Pass the list of UUIDs
-                    putExtra("current_position", position)  // Pass the current position
+                    putExtra("news_list", Gson().toJson(combinedList))  // Pass the combined list of NewsModel objects
+                    putExtra("current_position", combinedPosition)  // Pass the adjusted current position
                 }
                 startActivity(intent)
             }
@@ -105,10 +106,9 @@ class GeneralFragment : Fragment() {
                 newsTitle.text = newsDataForTopHeadlines[position].headLine
 
                 view.setOnClickListener {
-                    val uuidList = newsDataForTopHeadlines.map { it.uuid }
+                    val combinedList = (newsDataForTopHeadlines + newsDataForDown).toMutableList()
                     val intent = Intent(context, ReadFlinfoNewsActivity::class.java).apply {
-                        putExtra(Constants.NEWS_UUID, newsDataForTopHeadlines[position].uuid)
-                        putStringArrayListExtra("uuid_list", ArrayList(uuidList))  // Pass the list of UUIDs
+                        putExtra("news_list", Gson().toJson(combinedList))  // Pass the combined list of NewsModel objects
                         putExtra("current_position", position)  // Pass the current position
                     }
                     startActivity(intent)

@@ -2,38 +2,41 @@ package com.example.flinfo
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.text.Html
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
-import android.view.View
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.bumptech.glide.Glide
 import com.example.flinfo.architecture.NewsViewModel
-import com.example.flinfo.utils.Constants.NEWS_UUID
+import com.example.flinfo.retrofit.LearningModeResponse
+import com.example.flinfo.utils.GestureListener
+import com.example.flinfo.utils.animateHtmlTextTransition
+import com.example.flinfo.utils.animateImageTransition
+import com.example.flinfo.utils.animateTextTransition
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
-class ReadFlinfoNewsActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
+class ReadFlinfoNewsActivity : AppCompatActivity() {
 
     private lateinit var viewModel: NewsViewModel
     private lateinit var newsData: NewsModel
-    private lateinit var uuidList: ArrayList<String>
+    private lateinit var newsList: List<NewsModel>
     private var currentPosition: Int = 0
 
     private lateinit var textView_headline: TextView
     private lateinit var textView_content: TextView
-    private lateinit var learningModeButton: Button
+    private lateinit var fabLearningMode: FloatingActionButton
 
     private lateinit var gestureDetector: GestureDetector
-    private val SWIPE_THRESHOLD = 100
-    private val SWIPE_VELOCITY_THRESHOLD = 100
+
+    private var isInLearningMode = false
 
     @SuppressLint("CutPasteId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,94 +50,92 @@ class ReadFlinfoNewsActivity : AppCompatActivity(), GestureDetector.OnGestureLis
 
         textView_headline = findViewById(R.id.headline)
         textView_content = findViewById(R.id.content)
-        learningModeButton = findViewById(R.id.learningModeButton)
+        fabLearningMode = findViewById(R.id.fab_learning_mode)
 
-        uuidList = intent.getStringArrayListExtra("uuid_list") ?: arrayListOf()
+        val newsListJson = intent.getStringExtra("news_list")
+        if (newsListJson != null) {
+            newsList = Gson().fromJson(newsListJson, object : TypeToken<List<NewsModel>>() {}.type)
+        } else {
+            newsList = emptyList()
+        }
         currentPosition = intent.getIntExtra("current_position", 0)
 
-        Log.d("ReadFlinfoNewsActivity", "UUID List: $uuidList")
+        Log.d("ReadFlinfoNewsActivity", "News List: $newsList")
         Log.d("ReadFlinfoNewsActivity", "Current Position: $currentPosition")
 
         displayArticle(currentPosition)
 
-        learningModeButton.setOnClickListener {
-            openLearningMode()
+        fabLearningMode.setOnClickListener {
+            fetchAndOpenLearningMode()
         }
 
-        gestureDetector = GestureDetector(this, this)
+        gestureDetector = GestureDetector(this, GestureListener(
+            onSwipeLeft = { navigateToNextArticle() },
+            onSwipeRight = { navigateToPreviousArticle() }
+        ))
     }
 
     private fun displayArticle(position: Int) {
-        if (position < 0 || position >= uuidList.size) {
+        if (position < 0 || position >= newsList.size) {
             Log.e("ReadFlinfoNewsActivity", "Invalid position: $position")
             return
         }
 
-        val uuid = uuidList[position]
-        Log.d("ReadFlinfoNewsActivity", "Fetching article with UUID: $uuid")
+        newsData = newsList[position]
+        Log.d("ReadFlinfoNewsActivity", "Displaying article: ${newsData.uuid}")
 
-        viewModel.getArticle(uuid).observe(this, Observer { newsModel ->
-            if (newsModel != null) {
-                newsData = newsModel
-                Log.d("ReadFlinfoNewsActivity", "Article fetched: $newsData")
-                title = newsModel.headLine
+        title = newsData.headLine
 
-                // Animate the transition
-                animateTransition(newsModel)
-            } else {
-                Log.e("ReadFlinfoNewsActivity", "Failed to fetch article for UUID: $uuid")
-            }
-        })
+        // Animate the transition
+        animateTransition(newsData)
     }
 
     private fun animateTransition(newsModel: NewsModel) {
-        val imageView = findViewById<View>(R.id.imageView)
+        val imageView = findViewById<ImageView>(R.id.imageView)
         val headlineView = findViewById<TextView>(R.id.headline)
         val contentView = findViewById<TextView>(R.id.content)
 
-        imageView.animate().alpha(0f).setDuration(300).withEndAction {
-            Glide.with(this).load(newsModel.image).into(imageView as ImageView)
-            imageView.animate().alpha(1f).setDuration(300).start()
-        }.start()
+        // Hide the learning mode button at the start of the transition
+        fabLearningMode.hide()
 
-        headlineView.animate().alpha(0f).setDuration(300).withEndAction {
-            headlineView.text = newsModel.headLine
-            headlineView.animate().alpha(1f).setDuration(300).start()
-        }.start()
+        newsModel.image?.let { imageView.animateImageTransition(it) }
+        headlineView.animateTextTransition(newsModel.headLine)
+        contentView.animateHtmlTextTransition(newsModel.content ?: "")
 
-        contentView.animate().alpha(0f).setDuration(300).withEndAction {
-            val contentHtml = newsModel.content ?: ""
-            val pattern = """Translated Excerpt\..*</a>:\n\n""".toRegex()
-            val replacementText = "\n"
-            val articleTextHtml = contentHtml.replace(pattern, replacementText)
-            val formattedContentHtml = articleTextHtml.replace("\n", "<br>")
-            val contentSpanned = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Html.fromHtml(formattedContentHtml, Html.FROM_HTML_MODE_LEGACY)
-            } else {
-                Html.fromHtml(contentHtml)
-            }
-            contentView.text = contentSpanned
-            contentView.animate().alpha(1f).setDuration(300).start()
-        }.start()
+        // Show the learning mode button at the end of the transition
+        fabLearningMode.show()
+    }
 
-        learningModeButton.visibility = View.VISIBLE
-
-        // Fetch learning mode data asynchronously and store it
-        viewModel.getArticleInLearningMode(newsModel.uuid).observe(this, Observer { response ->
+    private fun fetchAndOpenLearningMode() {
+        val newsUuid = newsList[currentPosition].uuid
+        viewModel.getArticleInLearningMode(newsUuid).observe(this, Observer { response ->
             if (response != null) {
-                viewModel.fetchLearningModeData(newsModel.uuid)
+                openLearningMode(response)
             }
         })
     }
 
-    private fun openLearningMode() {
-        viewModel.learningModeData.observe(this, Observer { response ->
-            if (response != null) {
-                val intent = Intent(this, LearningModeActivity::class.java)
-                intent.putExtra("learningModeResponse", response)
-                startActivity(intent)
-            }
-        })
+    private fun openLearningMode(response: LearningModeResponse) {
+        isInLearningMode = true
+        val intent = Intent(this, LearningModeActivity::class.java)
+        intent.putExtra("learningModeResponse", response)
+        startActivityForResult(intent, LEARNING_MODE_REQUEST_CODE)
+        // Provide feedback to the user
+        Snackbar.make(findViewById(android.R.id.content), "Entering Learning Mode", Snackbar.LENGTH_SHORT).show()
+    }
+
+    override fun onBackPressed() {
+        if (isInLearningMode) {
+            exitLearningMode()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    private fun exitLearningMode() {
+        isInLearningMode = false
+        // Handle any necessary logic to exit learning mode
+        Snackbar.make(findViewById(android.R.id.content), "Exiting Learning Mode", Snackbar.LENGTH_SHORT).show()
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
@@ -143,75 +144,26 @@ class ReadFlinfoNewsActivity : AppCompatActivity(), GestureDetector.OnGestureLis
         return super.dispatchTouchEvent(ev)
     }
 
-    override fun onDown(e: MotionEvent): Boolean {
-        Log.d("GestureDetector", "onDown")
-        return true
-    }
-
-    override fun onShowPress(e: MotionEvent) {
-        Log.d("GestureDetector", "onShowPress")
-    }
-
-    override fun onSingleTapUp(e: MotionEvent): Boolean {
-        Log.d("GestureDetector", "onSingleTapUp")
-        return true
-    }
-
-    override fun onScroll(
-        e1: MotionEvent, e2: MotionEvent,
-        distanceX: Float, distanceY: Float
-    ): Boolean {
-        Log.d("GestureDetector", "onScroll")
-        return true
-    }
-
-    override fun onLongPress(e: MotionEvent) {
-        Log.d("GestureDetector", "onLongPress")
-    }
-
-    override fun onFling(
-        e1: MotionEvent, e2: MotionEvent,
-        velocityX: Float, velocityY: Float
-    ): Boolean {
-        Log.d("GestureDetector", "onFling: e1=$e1, e2=$e2, velocityX=$velocityX, velocityY=$velocityY")
-        val diffX = e2.x - e1.x
-        val diffY = e2.y - e1.y
-        if (Math.abs(diffX) > Math.abs(diffY)) {
-            if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-                if (diffX > 0) {
-                    // Swipe Right
-                    Log.d("GestureDetector", "Swipe Right")
-                    navigateToNextArticle()
-                } else {
-                    // Swipe Left
-                    Log.d("GestureDetector", "Swipe Left")
-                    navigateToPreviousArticle()
-                }
-                return true
-            }
-        }
-        return false
-    }
-
     private fun navigateToNextArticle() {
         Log.d("ReadFlinfoNewsActivity", "Navigating to next article")
-        currentPosition++
-        if (currentPosition < uuidList.size) {
-            displayArticle(currentPosition)
-        } else {
-            currentPosition--  // Stay at the last article if there is no next article
-            Log.d("ReadFlinfoNewsActivity", "Reached the last article, cannot navigate further")
-        }
+        currentPosition = (currentPosition + 1) % newsList.size
+        displayArticle(currentPosition)
     }
 
     private fun navigateToPreviousArticle() {
         Log.d("ReadFlinfoNewsActivity", "Navigating to previous article")
-        currentPosition--
-        if (currentPosition >= 0) {
-            displayArticle(currentPosition)
-        } else {
-            currentPosition++  // Stay at the first article if there is no previous article
-            Log.d("ReadFlinfoNewsActivity", "Reached the first article, cannot navigate further")
+        currentPosition = if (currentPosition - 1 < 0) newsList.size - 1 else currentPosition - 1
+        displayArticle(currentPosition)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == LEARNING_MODE_REQUEST_CODE && resultCode == RESULT_OK) {
+            isInLearningMode = false
         }
+    }
+
+    companion object {
+        private const val LEARNING_MODE_REQUEST_CODE = 1
     }
 }

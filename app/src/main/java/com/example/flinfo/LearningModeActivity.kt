@@ -1,6 +1,7 @@
 package com.example.flinfo
 
 import android.os.Bundle
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flinfo.retrofit.LearningModeResponse
 import com.example.flinfo.retrofit.WordInfo
@@ -9,7 +10,6 @@ import com.example.flinfo.databinding.LearningModeBottomButtonBarBinding
 import com.example.flinfo.databinding.LearningModeParagraphButtonSectionBinding
 import com.example.flinfo.databinding.LearningModeTitleSectionBinding
 import android.text.method.LinkMovementMethod
-import android.content.Intent
 import android.graphics.Color
 import android.widget.SeekBar
 import com.example.flinfo.adapters.WordAdapter
@@ -104,5 +104,10 @@ class LearningModeActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         TextToSpeechHelper.shutdown()
+    }
+
+    override fun onBackPressed() {
+        setResult(RESULT_OK)
+        super.onBackPressed()
     }
 }

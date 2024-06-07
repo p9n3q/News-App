@@ -18,25 +18,25 @@ class FragmentAdapter(fm: FragmentManager, lifecycle: Lifecycle) : FragmentState
                 return GeneralFragment()
             }
             1 -> {
-                return BusinessFragment()
+                return Hsk1Fragment()
             }
             2 -> {
-                return EntertainmentFragment()
+                return Hsk2Fragment()
             }
             3 -> {
-                return ScienceFragment()
+                return Hsk3Fragment()
             }
             4 -> {
-                return SportsFragment()
+                return Hsk4Fragment()
             }
             5 -> {
-                return TechFragment()
+                return Hsk5Fragment()
             }
             6 -> {
-                return HealthFragment()
+                return Hsk6Fragment()
             }
 
-            else -> return BusinessFragment()
+            else -> return Hsk1Fragment()
 
         }
     }
